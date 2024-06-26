@@ -1,0 +1,18 @@
+/* Ajustes para modales */
+.modal-dialog {
+    max-width: 800px; /* Ancho máximo del modal */
+}
+
+.modal-content {
+    border-radius: 10px; /* Bordes redondeados */
+}
+
+/* Ajustes para formularios dentro del modal */
+.modal-body form {
+    padding: 20px;
+}
+
+/* Ajustes para botones dentro del formulario */
+.modal-body form button {
+    margin-top: 10px;
+}
