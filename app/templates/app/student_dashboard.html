@@ -2,7 +2,11 @@
 
 {% block content %}
     <h2>Panel de Estudiante</h2>
-
+     <!-- Botón para cerrar sesión -->
+   <form action="{% url 'logout' %}" method="post" class="float-md-right">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+</form>
     <h3>Sistema de Avances</h3>
     <div>
         <h4>Seguimiento de Progreso</h4>
@@ -37,9 +41,5 @@
         <p>Recibe notificaciones sobre nuevas asignaciones y recordatorios importantes.</p>
     </div>
 
-    <!-- Botón para cerrar sesión -->
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
-    </form>
+  
 {% endblock %}
