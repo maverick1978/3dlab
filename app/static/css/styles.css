@@ -16,3 +16,43 @@
 .modal-body form button {
     margin-top: 10px;
 }
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f0f8ff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    width: 50%;
+    border-radius: 8px;
+}
+
+.popup-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form .form-group {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+form .form-group label {
+    width: 40%;
+    text-align: right;
+    margin-right: 10px;
+}
+
+form .form-group input,
+form .form-group select {
+    width: 55%;
+}
+
+button {
+    margin-top: 10px;
+}

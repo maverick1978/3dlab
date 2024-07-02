@@ -1,0 +1,28 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Asignar Estudiante a Clase</h1>
+
+    <form method="post" action="{% url 'assign_student' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="student">Estudiante</label>
+            <select name="student" id="student" class="form-control" required>
+                {% for student in students %}
+                <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="class">Clase</label>
+            <select name="class" id="class" class="form-control" required>
+                {% for class in classes %}
+                <option value="{{ class.id }}">{{ class.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Asignar Estudiante</button>
+    </form>
+</div>
+{% endblock %}

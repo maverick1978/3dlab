@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Student, Teacher, Class
+from .models import Student, Teacher, Class, CustomUser
 
 class UserForm(forms.ModelForm):
     class Meta:
@@ -21,3 +21,16 @@ class ClassForm(forms.ModelForm):
         model = Class
         fields = ['name', 'required_hours', 'level']
         # Puedes personalizar los campos si es necesario
+
+class CreateUserForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'password', 'confirm_password', 'user_type']
+
+class ClassForm(forms.ModelForm):
+    class Meta:
+        model = Class
+        fields = ['name', 'description', 'start_date', 'end_date', 'required_hours', 'level']

@@ -1,7 +1,66 @@
 {% extends 'app/base.html' %}
 
 {% block content %}
-<h2>Panel de Profesor</h2>
-<p>Gestiona tus clases y estudiantes aquí.</p>
-<!-- Añadir más contenido y funcionalidades específicas del profesor -->
+<div class="container">
+    <h1>Teacher Dashboard</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Botón para abrir modal de asignar estudiantes -->
+            <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#assignStudentModal">
+                Asignar Estudiantes
+            </button>
+        </div>
+        <div class="col-md-6">
+            <!-- Botón para cerrar sesión -->
+            <form action="{% url 'logout' %}" method="post" class="float-md-right">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger mb-2">Cerrar sesión</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Otros contenidos del dashboard aquí -->
+
+</div>
+
+<!-- Modal de Asignar Estudiantes -->
+<div class="modal fade" id="assignStudentModal" tabindex="-1" role="dialog" aria-labelledby="assignStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignStudentModalLabel">Asignar Estudiantes</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para asignar estudiantes -->
+                <form method="post" action="{% url 'assign_students' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="student">Estudiante</label>
+                        <select name="student" id="student" class="form-control">
+                            {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="class">Clase</label>
+                        <select name="class" id="class" class="form-control">
+                            {% for class in classes %}
+                            <option value="{{ class.id }}">{{ class.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Asignar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
+
+<!-- Scripts necesarios -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

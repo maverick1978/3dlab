@@ -1,7 +1,45 @@
 {% extends 'app/base.html' %}
 
 {% block content %}
-<h2>Panel de Estudiante</h2>
-<p>Gestiona tu progreso y agenda de estudio aquí.</p>
-<!-- Añadir más contenido y funcionalidades específicas del estudiante -->
+    <h2>Panel de Estudiante</h2>
+
+    <h3>Sistema de Avances</h3>
+    <div>
+        <h4>Seguimiento de Progreso</h4>
+        <img src="https://via.placeholder.com/400x200.png?text=Progress+Bar+Example" alt="Progress Bar Example">
+        <p>Aquí puedes ver tu progreso en los diferentes cursos.</p>
+    </div>
+
+    <div>
+        <h4>Visualización de Calificaciones</h4>
+        <img src="https://via.placeholder.com/400x200.png?text=Grades+Example" alt="Grades Example">
+        <p>Consulta tus calificaciones y retroalimentación de los profesores.</p>
+    </div>
+
+    <h3>Gestión de Documentos</h3>
+    <div>
+        <h4>Documentos y Videos</h4>
+        <img src="https://via.placeholder.com/400x200.png?text=Document+Management+Example" alt="Document Management Example">
+        <p>Administra y accede a documentos y videos relacionados con tus cursos.</p>
+    </div>
+
+    <h3>Agenda de Estudio</h3>
+    <div>
+        <h4>Calendario de Estudio</h4>
+        <img src="https://via.placeholder.com/400x200.png?text=Study+Schedule+Example" alt="Study Schedule Example">
+        <p>Crea y gestiona tu horario de estudio para mantenerse organizado.</p>
+    </div>
+
+    <h3>Notificaciones</h3>
+    <div>
+        <h4>Sistema de Alertas</h4>
+        <img src="https://via.placeholder.com/400x200.png?text=Notifications+Example" alt="Notifications Example">
+        <p>Recibe notificaciones sobre nuevas asignaciones y recordatorios importantes.</p>
+    </div>
+
+    <!-- Botón para cerrar sesión -->
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
+    </form>
 {% endblock %}
