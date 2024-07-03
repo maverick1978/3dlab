@@ -42,16 +42,19 @@ class Teacher(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
+from django.db import models
+
 class Class(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()  # Asegúrate de tener este campo
-    start_date = models.DateField()   # Asegúrate de tener este campo
-    end_date = models.DateField()     # Asegúrate de tener este campo
-    required_hours = models.IntegerField()  # Ejemplo de campo requerido
-    level = models.CharField(max_length=100)  # Ejemplo de campo nivel
+    description = models.TextField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    required_hours = models.IntegerField()
+    level = models.CharField(max_length=100, choices=[(str(i), str(i)) for i in range(1, 5)])  # Limitar a 4 niveles
 
     def __str__(self):
         return self.name
+
 
 class Assignment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -60,3 +63,10 @@ class Assignment(models.Model):
 
     def __str__(self):
         return f"{self.student} - {self.class_assigned}"
+    
+class Resource(models.Model):
+    class_resource = models.ForeignKey(Class, on_delete=models.CASCADE)
+    level = models.CharField(max_length=50)
+    text = models.TextField()
+    pdf = models.FileField(upload_to='resources/pdfs/', blank=True, null=True)
+    video_url = models.URLField(blank=True, null=True)

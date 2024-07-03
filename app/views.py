@@ -1,11 +1,10 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, get_user_model, logout
-from django.contrib.auth.decorators import login_required
-from .models import Student, Teacher, Class, Assignment, CustomUser
-from .forms import ClassForm, CreateUserForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
-from django.contrib.auth.models import Group
 from django.contrib import messages
+from .models import Student, Teacher, Class, Assignment, CustomUser, Resource
+from .forms import ClassForm, CreateUserForm, ResourceForm
 
 def home_view(request):
     return render(request, 'app/home.html')
@@ -27,38 +26,38 @@ def login_view(request):
             return render(request, 'app/login.html', {'error': 'Invalid credentials'})
     return render(request, 'app/login.html')
 
-def create_class_view(request):
-    if request.method == 'POST':
-        form = ClassForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('app/admin_dashboard')  # Ajusta la redirección según sea necesario
-    else:
-        form = ClassForm()
-    
-    return render(request, 'app/create_class.html', {'form': form})
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+def is_admin(user):
+    return user.is_superuser
+
+def is_teacher(user):
+    return user.groups.filter(name='Teacher').exists()
+
+def is_student(user):
+    return user.groups.filter(name='Student').exists()
 
 @login_required
+@user_passes_test(is_admin)
 def admin_dashboard_view(request):
     form_user = CreateUserForm()
     form_class = ClassForm()
-    if not request.user.is_superuser:
-        return redirect('home')
     return render(request, 'app/admin_dashboard.html', {'form_user': form_user, 'form_class': form_class})
 
-
 @login_required
+@user_passes_test(is_teacher)
 def teacher_dashboard_view(request):
-    if not hasattr(request.user, 'teacher'):
-        return redirect('home')
     return render(request, 'app/teacher_dashboard.html')
 
 @login_required
+@user_passes_test(is_student)
 def student_dashboard_view(request):
-    if not hasattr(request.user, 'student'):
-        return redirect('home')
     return render(request, 'app/student_dashboard.html')
 
+@login_required
+@user_passes_test(is_admin)
 def create_class_view(request):
     if request.method == 'POST':
         form = ClassForm(request.POST)
@@ -69,18 +68,52 @@ def create_class_view(request):
         form = ClassForm()
     return render(request, 'app/create_class.html', {'form': form})
 
-def logout_view(request):
-    logout(request)
-    return redirect('app/login')
-    
-def create_user_popup_view(request):
-    form = CreateUserForm()
-    return render(request, 'app/create_user.html', {'form': form})
+@login_required
+@user_passes_test(is_admin)
+def edit_class_view(request, class_id):
+    cls = get_object_or_404(Class, id=class_id)
+    if request.method == 'POST':
+        form = ClassForm(request.POST, instance=cls)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_dashboard')
+    else:
+        form = ClassForm(instance=cls)
+    return render(request, 'app/edit_class.html', {'form': form})
 
-def create_class_popup_view(request):
-    form = ClassForm()
-    return render(request, 'app/create_class.html', {'form': form})
+@login_required
+@user_passes_test(is_admin)
+def delete_class_view(request, class_id):
+    cls = get_object_or_404(Class, id=class_id)
+    if request.method == 'POST':
+        cls.delete()
+        return redirect('admin_dashboard')
+    return render(request, 'app/delete_class.html', {'class': cls})
 
+@login_required
+@user_passes_test(lambda u: is_teacher(u) or is_student(u))
+def view_class_view(request, class_id):
+    cls = get_object_or_404(Class, id=class_id)
+    resources = Resource.objects.filter(class_obj=cls).order_by('level')
+    return render(request, 'app/view_class.html', {'class': cls, 'resources': resources})
+
+@login_required
+@user_passes_test(is_teacher)
+def add_resource_view(request, class_id):
+    cls = get_object_or_404(Class, id=class_id)
+    if request.method == 'POST':
+        form = ResourceForm(request.POST, request.FILES)
+        if form.is_valid():
+            resource = form.save(commit=False)
+            resource.class_obj = cls
+            resource.save()
+            return redirect('view_class', class_id=class_id)
+    else:
+        form = ResourceForm()
+    return render(request, 'app/add_resource.html', {'form': form, 'class': cls})
+
+@login_required
+@user_passes_test(is_admin)
 def create_user_view(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -91,11 +124,18 @@ def create_user_view(request):
 
         if password != confirm_password:
             messages.error(request, 'Passwords do not match.')
-            return redirect('admin_dashboard')  # O redirigir a otra vista adecuada
+            return redirect('admin_dashboard')
+        
+        if CustomUser.objects.filter(username=username).exists():
+            messages.error(request, 'Username already exists.')
+            return redirect('admin_dashboard')
 
         user = CustomUser.objects.create_user(username=username, email=email, password=password)
         user.user_type = user_type
         user.save()
+
+        messages.success(request, 'User created successfully.')
+        return redirect('admin_dashboard')
 
         if user_type == 'student':
             Student.objects.create(user=user, first_name=user.first_name, last_name=user.last_name)
@@ -103,24 +143,22 @@ def create_user_view(request):
             Teacher.objects.create(user=user, first_name=user.first_name, last_name=user.last_name)
 
         messages.success(request, 'User created successfully!')
-        return redirect('admin_dashboard')  # Redirigir a una vista adecuada después de la creación
+        return redirect('admin_dashboard')
 
-    return HttpResponse("Crear usuario aquí")  # Puedes cambiar esto a una redirección o renderizado de template
+    return HttpResponse("Crear usuario aquí")
+
+@login_required
+@user_passes_test(is_teacher)
 def assign_students_view(request):
     if request.method == 'POST':
-        # Lógica para procesar el formulario y asignar estudiantes a clases
-        # Ejemplo básico:
         student_id = request.POST.get('student')
         class_id = request.POST.get('class')
         student = Student.objects.get(pk=student_id)
         class_instance = Class.objects.get(pk=class_id)
-        # Asignación de estudiante a clase (aquí deberías definir la lógica según tu aplicación)
-        # Por ejemplo:
         class_instance.students.add(student)
         class_instance.save()
-        return redirect('teacher_dashboard')  # Redirige a donde corresponda
+        return redirect('teacher_dashboard')
 
-    # Renderiza el formulario inicial si es un GET request
     students = Student.objects.all()
     classes = Class.objects.all()
     context = {'students': students, 'classes': classes}

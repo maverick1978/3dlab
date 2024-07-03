@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     create_class_view, home_view, create_user_view, login_view,
     admin_dashboard_view, teacher_dashboard_view, student_dashboard_view,
-    create_user_popup_view, create_class_popup_view, assign_students_view
+    assign_students_view
 )
 from django.contrib.auth import views as auth_views
 
@@ -14,8 +14,8 @@ urlpatterns = [
     path('student_dashboard/', student_dashboard_view, name='student_dashboard'),
     path('create_user/', create_user_view, name='create_user'),
     path('create_class/', create_class_view, name='create_class'),
-    path('create_user_popup/', create_user_popup_view, name='create_user_popup'),
-    path('create_class_popup/', create_class_popup_view, name='create_class_popup'),
+    path('create_user_popup/', create_user_view, name='create_user_popup'),
+    path('create_class_popup/', create_class_view, name='create_class_popup'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('assign_students/', assign_students_view, name='assign_students'),
 ]

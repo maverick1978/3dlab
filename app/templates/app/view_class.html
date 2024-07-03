@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ class.name }}</h2>
+{% if request.user|is_teacher %}
+<a href="{% url 'add_resource' class.id %}" class="btn btn-primary">Agregar Recurso</a>
+{% endif %}
+<div class="accordion" id="classLevels">
+    {% for resource in resources %}
+    <div class="card">
+        <div class="card-header" id="heading{{ resource.level }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{ resource.level }}" aria-expanded="true" aria-controls="collapse{{ resource.level }}">
+                    Nivel {{ resource.level }}
+                </button>
+            </h2>
+        </div>
+        <div id="collapse{{ resource.level }}" class="collapse" aria-labelledby="heading{{ resource.level }}" data-parent="#classLevels">
+            <div class="card-body">
+                <p>{{ resource.text }}</p>
+                {% if resource.pdf %}
+                <p><a href="{{ resource.pdf.url }}" target="_blank">Ver PDF</a></p>
+                {% endif %}
+                {% if resource.video_url %}
+                <p><iframe src="{{ resource.video_url }}" width="560" height="315" frameborder="0" allowfullscreen></iframe></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<a href="{% url 'dashboard' %}" class="btn btn-secondary">Volver al Dashboard</a>
+{% endblock %}

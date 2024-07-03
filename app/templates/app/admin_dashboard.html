@@ -10,6 +10,7 @@
 </head>
 <body>
     {% include 'app/base.html' %}
+    {% block content %}
     <div class="container">
         <h1>Admin Dashboard</h1>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createUserModal">Crear Nuevo Usuario</button>
@@ -22,6 +23,29 @@
         {% include 'app/create_user.html' %}
         {% include 'app/create_class.html' %}
     </div>
+    
+    <div class="row">
+        {% for class in classes %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <img src="{% static 'path_to_default_image.jpg' %}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">{{ class.name }}</h5>
+                    <p class="card-text">Nivel: {{ class.level }}</p>
+                    <p class="card-text">Horas Requeridas: {{ class.required_hours }}</p>
+                    <p class="card-text">Fecha de Inicio: {{ class.start_date }}</p>
+                    <p class="card-text">Fecha de Fin: {{ class.end_date }}</p>
+                    <a href="{% url 'edit_class' class.id %}" class="btn btn-primary">Editar</a>
+                    <a href="{% url 'delete_class' class.id %}" class="btn btn-danger">Eliminar</a>
+                    <a href="{% url 'view_class' class.id %}" class="btn btn-success">Ver Clase</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% include "app/create_class.html" %}
+    {% endblock %}
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
