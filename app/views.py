@@ -5,7 +5,19 @@ from django.http import HttpResponse
 from django.contrib import messages
 from .models import Student, Teacher, Class, Assignment, CustomUser, Resource
 from .forms import ClassForm, CreateUserForm, ResourceForm
+from .utils import is_teacher, is_student, is_admin  # Asegúrate de importar is_admin
 
+# Definición de las funciones is_teacher, is_student e is_admin
+def is_teacher(user):
+    return user.is_teacher
+
+def is_student(user):
+    return user.is_student
+
+def is_admin(user):
+    return user.is_superuser
+
+# Resto de las vistas
 def home_view(request):
     return render(request, 'app/home.html')
 
@@ -16,35 +28,34 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            if user.is_superuser:
+            next_url = request.POST.get('next') or request.GET.get('next') or None
+            if next_url:
+                return redirect(next_url)
+            elif user.is_superuser:
                 return redirect('admin_dashboard')
-            elif hasattr(user, 'teacher'):
+            elif user.is_teacher:
                 return redirect('teacher_dashboard')
-            elif hasattr(user, 'student'):
+            elif user.is_student:
                 return redirect('student_dashboard')
+            else:
+                messages.error(request, 'No tiene permiso para acceder a este sitio.')
+                logout(request)
+                return redirect('login')
         else:
-            return render(request, 'app/login.html', {'error': 'Invalid credentials'})
-    return render(request, 'app/login.html')
+            messages.error(request, 'Credenciales no válidas.')
+    return render(request, 'app/login.html', {'next': request.GET.get('next', '')})
 
 def logout_view(request):
     logout(request)
     return redirect('login')
-
-def is_admin(user):
-    return user.is_superuser
-
-def is_teacher(user):
-    return user.groups.filter(name='Teacher').exists()
-
-def is_student(user):
-    return user.groups.filter(name='Student').exists()
 
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard_view(request):
     form_user = CreateUserForm()
     form_class = ClassForm()
-    return render(request, 'app/admin_dashboard.html', {'form_user': form_user, 'form_class': form_class})
+    classes = Class.objects.all()  # Asegúrate de obtener las clases
+    return render(request, 'app/admin_dashboard.html', {'form_user': form_user, 'form_class': form_class, 'classes': classes})
 
 @login_required
 @user_passes_test(is_teacher)
@@ -94,7 +105,7 @@ def delete_class_view(request, class_id):
 @user_passes_test(lambda u: is_teacher(u) or is_student(u))
 def view_class_view(request, class_id):
     cls = get_object_or_404(Class, id=class_id)
-    resources = Resource.objects.filter(class_obj=cls).order_by('level')
+    resources = Resource.objects.filter(class_resource=cls).order_by('level')
     return render(request, 'app/view_class.html', {'class': cls, 'resources': resources})
 
 @login_required
@@ -105,7 +116,7 @@ def add_resource_view(request, class_id):
         form = ResourceForm(request.POST, request.FILES)
         if form.is_valid():
             resource = form.save(commit=False)
-            resource.class_obj = cls
+            resource.class_resource = cls
             resource.save()
             return redirect('view_class', class_id=class_id)
     else:
@@ -125,7 +136,7 @@ def create_user_view(request):
         if password != confirm_password:
             messages.error(request, 'Passwords do not match.')
             return redirect('admin_dashboard')
-        
+
         if CustomUser.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists.')
             return redirect('admin_dashboard')
@@ -133,9 +144,6 @@ def create_user_view(request):
         user = CustomUser.objects.create_user(username=username, email=email, password=password)
         user.user_type = user_type
         user.save()
-
-        messages.success(request, 'User created successfully.')
-        return redirect('admin_dashboard')
 
         if user_type == 'student':
             Student.objects.create(user=user, first_name=user.first_name, last_name=user.last_name)

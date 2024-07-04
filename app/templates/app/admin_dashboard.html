@@ -17,9 +17,9 @@
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createClassModal">Crear Nueva Clase</button>
         <!-- Botón para cerrar sesión -->
         <form action="{% url 'logout' %}" method="post" class="float-md-right">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Cerrar sesión</button>
-        </form>
+         {% csrf_token %}
+         <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+     </form>
         {% include 'app/create_user.html' %}
         {% include 'app/create_class.html' %}
     </div>

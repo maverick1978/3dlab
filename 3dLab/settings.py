@@ -116,5 +116,29 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'app/static')]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom user model
 AUTH_USER_MODEL = 'app.CustomUser'
-LOGOUT_REDIRECT_URL = '/'
 
+# Agrega esto si aún no está
+LOGIN_URL = 'login'  # Nombre de la URL de inicio de sesión
+LOGIN_REDIRECT_URL = 'student_dashboard'  # Redirigir después de iniciar sesión
+LOGOUT_REDIRECT_URL = 'login'  # Redirigir después de cerrar sesión
+
+# settings.py
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'django.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
