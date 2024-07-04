@@ -1,5 +1,6 @@
 {% extends 'app/base.html' %}
 {% block content %}
+{% load static %} 
 <div class="container">
     <h1>Teacher Dashboard</h1>
     <div class="row">
@@ -13,7 +14,7 @@
             {% for class in classes %}
             <div class="col-md-4">
                 <div class="card mb-4">
-                    <img src="{% static 'path_to_default_image.jpg' %}" class="card-img-top" alt="...">
+                    <img src="{% static '' %}" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">{{ class.name }}</h5>
                         <p class="card-text">Nivel: {{ class.level }}</p>
@@ -26,7 +27,6 @@
             </div>
             {% endfor %}
         </div>
-        {% endblock %}
         <div class="col-md-6">
             <!-- Botón para cerrar sesión -->
             <form action="{% url 'logout' %}" method="post" class="float-md-right">

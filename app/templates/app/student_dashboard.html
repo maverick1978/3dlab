@@ -1,5 +1,6 @@
 {% extends 'app/base.html' %}
 {% block content %}
+{% load static %} 
     <h2>Panel de Estudiante</h2>
      <!-- Botón para cerrar sesión -->
    <form action="{% url 'logout' %}" method="post" class="float-md-right">
@@ -23,7 +24,6 @@
     </div>
     {% endfor %}
 </div>
-{% endblock %}
     <h3>Sistema de Avances</h3>
     <div>
         <h4>Seguimiento de Progreso</h4>
@@ -57,6 +57,4 @@
         <img src="https://via.placeholder.com/400x200.png?text=Notifications+Example" alt="Notifications Example">
         <p>Recibe notificaciones sobre nuevas asignaciones y recordatorios importantes.</p>
     </div>
-
-  
 {% endblock %}

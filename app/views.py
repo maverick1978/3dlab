@@ -9,10 +9,10 @@ from .utils import is_teacher, is_student, is_admin  # Asegúrate de importar is
 
 # Definición de las funciones is_teacher, is_student e is_admin
 def is_teacher(user):
-    return user.is_teacher
+    return hasattr(user, 'teacher')
 
 def is_student(user):
-    return user.is_student
+    return hasattr(user, 'student')
 
 def is_admin(user):
     return user.is_superuser
@@ -27,21 +27,28 @@ def login_view(request):
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            print(f"Authenticated user: {user.username}")  # Debugging print statement
             login(request, user)
             next_url = request.POST.get('next') or request.GET.get('next') or None
             if next_url:
+                print(f"Redirecting to next URL: {next_url}")  # Debugging print statement
                 return redirect(next_url)
             elif user.is_superuser:
+                print("Redirecting to admin dashboard")  # Debugging print statement
                 return redirect('admin_dashboard')
-            elif user.is_teacher:
+            elif hasattr(user, 'teacher'):
+                print("Redirecting to teacher dashboard")  # Debugging print statement
                 return redirect('teacher_dashboard')
-            elif user.is_student:
+            elif hasattr(user, 'student'):
+                print("Redirecting to student dashboard")  # Debugging print statement
                 return redirect('student_dashboard')
             else:
+                print("User does not have permissions for any dashboard")  # Debugging print statement
                 messages.error(request, 'No tiene permiso para acceder a este sitio.')
                 logout(request)
                 return redirect('login')
         else:
+            print("Authentication failed")  # Debugging print statement
             messages.error(request, 'Credenciales no válidas.')
     return render(request, 'app/login.html', {'next': request.GET.get('next', '')})
 
