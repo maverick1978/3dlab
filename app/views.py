@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
 from django.contrib import messages
 from .models import Student, Teacher, Class, Assignment, CustomUser, Resource
-from .forms import ClassForm, CreateUserForm, ResourceForm
+from .forms import ClassForm, CreateUserForm, ResourceForm, StudentForm, TeacherForm
 from .utils import is_teacher, is_student, is_admin  # Asegúrate de importar is_admin
 
 # Definición de las funciones is_teacher, is_student e is_admin
@@ -178,3 +178,30 @@ def assign_students_view(request):
     classes = Class.objects.all()
     context = {'students': students, 'classes': classes}
     return render(request, 'app/assign_student.html', context)
+@login_required
+def edit_user_view(request):
+    if request.user.is_student:
+        student = get_object_or_404(Student, user=request.user)
+        if request.method == 'POST':
+            form = StudentForm(request.POST, instance=student)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Datos del estudiante actualizados con éxito.')
+                return redirect('student_dashboard')
+        else:
+            form = StudentForm(instance=student)
+    elif request.user.is_teacher:
+        teacher = get_object_or_404(Teacher, user=request.user)
+        if request.method == 'POST':
+            form = TeacherForm(request.POST, instance=teacher)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Datos del profesor actualizados con éxito.')
+                return redirect('teacher_dashboard')
+        else:
+            form = TeacherForm(instance=teacher)
+    else:
+        messages.error(request, 'No tiene permiso para editar estos datos.')
+        return redirect('home')
+
+    return render(request, 'app/edit_user.html', {'form': form})

@@ -1,60 +1,111 @@
 {% extends 'app/base.html' %}
 {% block content %}
 {% load static %} 
-    <h2>Panel de Estudiante</h2>
-     <!-- Botón para cerrar sesión -->
-   <form action="{% url 'logout' %}" method="post" class="float-md-right">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
-</form>
-<div class="row">
-    {% for class in classes %}
-    <div class="col-md-4">
-        <div class="card mb-4">
-            <img src="{% static 'path_to_default_image.jpg' %}" class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">{{ class.name }}</h5>
-                <p class="card-text">Nivel: {{ class.level }}</p>
-                <p class="card-text">Horas Requeridas: {{ class.required_hours }}</p>
-                <p class="card-text">Fecha de Inicio: {{ class.start_date }}</p>
-                <p class="card-text">Fecha de Fin: {{ class.end_date }}</p>
-                <a href="{% url 'view_class' class.id %}" class="btn btn-success">Ver Clase</a>
+<div class="container">
+    <h1>Teacher Dashboard</h1>
+    <!-- Botón para abrir el modal de editar usuario -->
+    <button type="button" class="btn btn-warning mt-3" data-toggle="modal" data-target="#editUserModal">Editar Datos</button>
+
+    <!-- Modal para editar usuario -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Editar Datos del Usuario</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post" action="{% url 'edit_user' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <!-- Los campos del formulario se incluirán aquí mediante una plantilla -->
+                        {% include 'app/edit_user_form.html' %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    {% endfor %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Botón para abrir modal de asignar estudiantes -->
+            <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#assignStudentModal">
+                Asignar Estudiantes
+            </button>
+        </div>
+        <div class="row">
+            {% for class in classes %}
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <img src="{% static 'path_to_image.jpg' %}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ class.name }}</h5>
+                        <p class="card-text">Nivel: {{ class.level }}</p>
+                        <p class="card-text">Horas Requeridas: {{ class.required_hours }}</p>
+                        <p class="card-text">Fecha de Inicio: {{ class.start_date }}</p>
+                        <p class="card-text">Fecha de Fin: {{ class.end_date }}</p>
+                        <a href="{% url 'view_class' class.id %}" class="btn btn-success">Ver Clase</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-6">
+            <!-- Botón para cerrar sesión -->
+            <form action="{% url 'logout' %}" method="post" class="float-md-right">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger mb-2">Cerrar sesión</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Otros contenidos del dashboard aquí -->
+
 </div>
-    <h3>Sistema de Avances</h3>
-    <div>
-        <h4>Seguimiento de Progreso</h4>
-        <img src="https://via.placeholder.com/400x200.png?text=Progress+Bar+Example" alt="Progress Bar Example">
-        <p>Aquí puedes ver tu progreso en los diferentes cursos.</p>
-    </div>
 
-    <div>
-        <h4>Visualización de Calificaciones</h4>
-        <img src="https://via.placeholder.com/400x200.png?text=Grades+Example" alt="Grades Example">
-        <p>Consulta tus calificaciones y retroalimentación de los profesores.</p>
+<!-- Modal de Asignar Estudiantes -->
+<div class="modal fade" id="assignStudentModal" tabindex="-1" role="dialog" aria-labelledby="assignStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignStudentModalLabel">Asignar Estudiantes</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para asignar estudiantes -->
+                <form method="post" action="{% url 'assign_students' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="student">Estudiante</label>
+                        <select name="student" id="student" class="form-control">
+                            {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="class">Clase</label>
+                        <select name="class" id="class" class="form-control">
+                            {% for class in classes %}
+                            <option value="{{ class.id }}">{{ class.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Asignar</button>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <h3>Gestión de Documentos</h3>
-    <div>
-        <h4>Documentos y Videos</h4>
-        <img src="https://via.placeholder.com/400x200.png?text=Document+Management+Example" alt="Document Management Example">
-        <p>Administra y accede a documentos y videos relacionados con tus cursos.</p>
-    </div>
-
-    <h3>Agenda de Estudio</h3>
-    <div>
-        <h4>Calendario de Estudio</h4>
-        <img src="https://via.placeholder.com/400x200.png?text=Study+Schedule+Example" alt="Study Schedule Example">
-        <p>Crea y gestiona tu horario de estudio para mantenerse organizado.</p>
-    </div>
-
-    <h3>Notificaciones</h3>
-    <div>
-        <h4>Sistema de Alertas</h4>
-        <img src="https://via.placeholder.com/400x200.png?text=Notifications+Example" alt="Notifications Example">
-        <p>Recibe notificaciones sobre nuevas asignaciones y recordatorios importantes.</p>
-    </div>
+</div>
 {% endblock %}
+
+<!-- Scripts necesarios -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
