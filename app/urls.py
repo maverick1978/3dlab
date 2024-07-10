@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib.auth.views import LogoutView
-from .views import  edit_user_view, assign_students_view, create_user_view, add_resource_view, view_class_view, delete_class_view, home_view, login_view, logout_view, admin_dashboard_view, teacher_dashboard_view, student_dashboard_view, create_class_view,edit_class_view
+from .views import  delete_class, edit_user_view, assign_students_view, create_user_view, add_resource_view, view_class_view, delete_class_view, home_view, login_view, logout_view, admin_dashboard_view, teacher_dashboard_view, student_dashboard_view, create_class_view,edit_class_view
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -19,4 +19,5 @@ urlpatterns = [
     path('view_class/<int:class_id>/', view_class_view, name='view_class'),
     path('add_resource/<int:class_id>/', add_resource_view, name='add_resource'),
     path('assign_students/', assign_students_view, name='assign_students'),
+    path('delete_class/<int:class_id>/',delete_class, name='delete_class'),
 ]

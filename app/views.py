@@ -102,11 +102,11 @@ def edit_class_view(request, class_id):
 @login_required
 @user_passes_test(is_admin)
 def delete_class_view(request, class_id):
-    cls = get_object_or_404(Class, id=class_id)
+    class_instance = get_object_or_404(Class, id=class_id)
     if request.method == 'POST':
-        cls.delete()
+        class_instance.delete()
         return redirect('admin_dashboard')
-    return render(request, 'app/delete_class.html', {'class': cls})
+    return render(request, 'app/delete_class.html', {'class': class_instance})
 
 @login_required
 @user_passes_test(lambda u: is_teacher(u) or is_student(u))
@@ -205,3 +205,17 @@ def edit_user_view(request):
         return redirect('home')
 
     return render(request, 'app/edit_user.html', {'form': form})
+
+def confirm_delete_class(request, class_id):
+    class_instance = get_object_or_404(Class, id=class_id)
+    if request.method == 'POST':
+        class_instance.delete()
+        return redirect('admin_dashboard')  # Ajusta según tu URL
+    return render(request, 'app/admin_dashboard.html', {'class': class_instance})
+
+def delete_class(request, class_id):
+    class_instance = get_object_or_404(Class, id=class_id)
+    if request.method == 'POST':
+        class_instance.delete()
+        return redirect('admin_dashboard')
+    return render(request, 'app/admin_dashboard.html')

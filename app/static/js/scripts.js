@@ -44,3 +44,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 });
+// static/js/scripts.js
+
+$(document).ready(function(){
+    $('#deleteClassModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Botón que activó el modal
+        var classId = button.data('class-id'); // Extraer información de los atributos data-*
+        var className = button.data('class-name');
+        
+        var modal = $(this);
+        modal.find('#class-name-to-delete').text(className);
+        
+        var form = modal.find('#delete-class-form');
+        var action = '/delete_class/' + classId + '/';
+        form.attr('action', action);
+    });
+});

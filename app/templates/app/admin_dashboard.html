@@ -17,14 +17,14 @@
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createClassModal">Crear Nueva Clase</button>
         <!-- Botón para cerrar sesión -->
         <form action="{% url 'logout' %}" method="post" class="float-md-right">
-         {% csrf_token %}
-         <button type="submit" class="btn btn-danger">Cerrar sesión</button>
-     </form>
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+        </form>
         {% include 'app/create_user.html' %}
         {% include 'app/create_class.html' %}
     </div>
-    
-    <div class="row">
+
+    <div class="row mt-4">
         {% for class in classes %}
         <div class="col-md-4">
             <div class="card mb-4">
@@ -35,32 +35,23 @@
                     <p class="card-text">Horas Requeridas: {{ class.required_hours }}</p>
                     <p class="card-text">Fecha de Inicio: {{ class.start_date }}</p>
                     <p class="card-text">Fecha de Fin: {{ class.end_date }}</p>
-                    <a href="{% url 'edit_class' class.id %}" class="btn btn-primary">Editar</a>
-                    <a href="{% url 'delete_class' class.id %}" class="btn btn-danger">Eliminar</a>
-                    <a href="{% url 'view_class' class.id %}" class="btn btn-success">Ver Clase</a>
+                    <div class="btn-group" role="group" aria-label="Class Actions">
+                        <a href="{% url 'edit_class' class.id %}" class="btn btn-primary btn-sm">Editar</a>
+                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteClassModal" data-class-id="{{ class.id }}">Eliminar</button>
+                        <a href="{% url 'view_class' class.id %}" class="btn btn-success btn-sm">Ver Clase</a>
+                    </div>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
-    
-    {% include "app/create_class.html" %}
+
+    {% include 'app/delete_class.html' %}
     {% endblock %}
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <script>
-        $(document).ready(function(){
-            $('#createUserModal').on('show.bs.modal', function () {
-                $('#createClassModal').modal('hide');
-            });
-
-            $('#createClassModal').on('show.bs.modal', function () {
-                $('#createUserModal').modal('hide');
-            });
-        });
-    </script>
+    <script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>
