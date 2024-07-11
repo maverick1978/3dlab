@@ -120,7 +120,7 @@ AUTH_USER_MODEL = 'app.CustomUser'
 # Agrega esto si aún no está
 LOGIN_URL = 'login'  # Nombre de la URL de inicio de sesión
 LOGIN_REDIRECT_URL = 'student_dashboard'  # Redirigir después de iniciar sesión
-LOGOUT_REDIRECT_URL = 'login'  # Redirigir después de cerrar sesión
+LOGOUT_REDIRECT_URL = 'home'  # Redirigir después de cerrar sesión
 
 # settings.py
 

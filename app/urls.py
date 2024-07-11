@@ -1,11 +1,12 @@
 from django.urls import path
 from django.contrib.auth.views import LogoutView
 from .views import  edit_user_view, assign_students_view, create_user_view, add_resource_view, view_class_view, delete_class_view, home_view, login_view, logout_view, admin_dashboard_view, teacher_dashboard_view, student_dashboard_view, create_class_view,edit_class_view
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', home_view, name='home'),
     path('login/', login_view, name='login'),
-    path('logout/', logout_view, name='logout'),
+    path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     path('admin_dashboard/', admin_dashboard_view, name='admin_dashboard'),
     path('teacher_dashboard/',teacher_dashboard_view, name='teacher_dashboard'),
     path('student_dashboard/',student_dashboard_view, name='student_dashboard'),

@@ -6,6 +6,8 @@ from django.contrib import messages
 from .models import Student, Teacher, Class, Assignment, CustomUser, Resource
 from .forms import ClassForm, CreateUserForm, ResourceForm, StudentForm, TeacherForm
 from .utils import is_teacher, is_student, is_admin  # Asegúrate de importar is_admin
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.views import LogoutView
 
 # Definición de las funciones is_teacher, is_student e is_admin
 def is_teacher(user):
@@ -54,7 +56,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('home')
 
 @login_required
 @user_passes_test(is_admin)
@@ -106,8 +108,7 @@ def delete_class_view(request, class_id):
     if request.method == 'POST':
         cls.delete()
         return redirect('admin_dashboard')
-    return render(request, 'app/delete_class.html', {'class': cls})
-
+    
 @login_required
 @user_passes_test(lambda u: is_teacher(u) or is_student(u))
 def view_class_view(request, class_id):

@@ -15,15 +15,15 @@
         <h1>Admin Dashboard</h1>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createUserModal">Crear Nuevo Usuario</button>
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createClassModal">Crear Nueva Clase</button>
-        <!-- Botón para cerrar sesión -->
-        <form action="{% url 'logout' %}" method="post" class="float-md-right">
-         {% csrf_token %}
-         <button type="submit" class="btn btn-danger">Cerrar sesión</button>
-     </form>
-        {% include 'app/create_user.html' %}
-        {% include 'app/create_class.html' %}
+         <!-- Botón para cerrar sesión -->
+         <form action="{% url 'logout' %}" method="post" class="float-md-right">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger mb-2">Cerrar sesión</button>
+        </form>
+        
     </div>
-    
+    {% include 'app/create_user.html' %}
+    {% include 'app/create_class.html' %}
     <div class="row">
         {% for class in classes %}
         <div class="col-md-4">
@@ -36,7 +36,7 @@
                     <p class="card-text">Fecha de Inicio: {{ class.start_date }}</p>
                     <p class="card-text">Fecha de Fin: {{ class.end_date }}</p>
                     <a href="{% url 'edit_class' class.id %}" class="btn btn-primary">Editar</a>
-                    <a href="{% url 'delete_class' class.id %}" class="btn btn-danger">Eliminar</a>
+                    <button class="btn btn-danger" onclick="showDeleteModal('{% url 'delete_class' class.id %}')">Eliminar</button>
                     <a href="{% url 'view_class' class.id %}" class="btn btn-success">Ver Clase</a>
                 </div>
             </div>
@@ -44,7 +44,7 @@
         {% endfor %}
     </div>
     
-    {% include "app/create_class.html" %}
+    {% include "app/delete_class.html" %}
     {% endblock %}
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -52,6 +52,11 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
+        function showDeleteModal(deleteUrl) {
+            $('#confirmDeleteButton').attr('href', deleteUrl);
+            $('#deleteConfirmationModal').modal('show');
+        }
+
         $(document).ready(function(){
             $('#createUserModal').on('show.bs.modal', function () {
                 $('#createClassModal').modal('hide');
